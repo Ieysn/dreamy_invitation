@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kawaii Twin Chan 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#0d0209}
+
+/* ═══ AURORA BG ═══ */
+#aurora{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%,#ff4a7618 0%,transparent 60%),
+    radial-gradient(ellipse 70% 80% at 80% 80%,#c4006840 0%,transparent 55%),
+    radial-gradient(ellipse 90% 50% at 50% 50%,#ff9bb530 0%,transparent 70%),
+    linear-gradient(160deg,#1a0510 0%,#2d0a1a 30%,#1e0612 60%,#0d0308 100%);
+  animation:auroraShift 14s ease-in-out infinite alternate;
+}
+@keyframes auroraShift{
+  0%{opacity:.7;filter:hue-rotate(0deg)}
+  100%{opacity:1;filter:hue-rotate(15deg)}
+}
+
+/* ═══ STARS ═══ */
+#stars-canvas{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+/* ═══ PETALS ═══ */
+.bg-petal{
+  position:fixed;pointer-events:none;
+  animation:floatPetal linear infinite;z-index:2;
+}
+@keyframes floatPetal{
+  0%  {transform:translateY(110vh) rotate(0deg);opacity:0}
+  8%  {opacity:1}
+  92% {opacity:.4}
+  100%{transform:translateY(-10vh) rotate(540deg);opacity:0}
+}
+
+/* ═══ SCENE ═══ */
+#scene{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:10;transition:opacity .5s,transform .5s;
+}
+#scene.hide{opacity:0;transform:scale(.7) translateY(30px);pointer-events:none}
+
+/* ═══ ENVELOPE WRAP ═══ */
+#envelope-wrap{
+  display:flex;flex-direction:column;align-items:center;gap:26px;
+  cursor:pointer;
+  animation:envFloat 4s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+#envelope-wrap.opening{animation:none;pointer-events:none}
+@keyframes envFloat{
+  0%,100%{transform:translateY(0) rotateY(0deg)}
+  25%    {transform:translateY(-14px) rotateY(2deg)}
+  75%    {transform:translateY(-7px) rotateY(-1.5deg)}
+}
+
+/* ═══ ENVELOPE ═══ */
+#envelope{
+  position:relative;
+  width:min(380px,88vw);height:min(255px,60vw);
+  filter:drop-shadow(0 20px 60px #ff4a7655) drop-shadow(0 4px 16px #ff000035);
+  transition:filter .4s;
+}
+#envelope-wrap:hover #envelope{filter:drop-shadow(0 30px 80px #ff4a7675) drop-shadow(0 6px 24px #ff4a7655)}
+
+/* shimmer */
+#envelope::after{
+  content:'';position:absolute;inset:0;border-radius:6px 6px 14px 14px;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.2) 50%,transparent 70%);
+  background-size:200% 100%;
+  animation:shimmer 3.5s linear infinite;pointer-events:none;z-index:20;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.env-body{
+  position:absolute;inset:0;border-radius:6px 6px 14px 14px;
+  background:linear-gradient(155deg,#fff5f9 0%,#ffe0ed 40%,#ffd0e3 70%,#ffbdd4 100%);
+  border:2.5px solid #ffb0c8;overflow:hidden;
+}
+.env-body::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  background-size:120px 120px;opacity:.5;
+}
+.env-left{position:absolute;left:0;bottom:0;width:52%;height:100%;background:linear-gradient(150deg,#ffd8ea,#ffb7c9 60%,#ffa8be);clip-path:polygon(0 0,0 100%,100% 100%)}
+.env-right{position:absolute;right:0;bottom:0;width:52%;height:100%;background:linear-gradient(210deg,#ffd8ea,#ffb7c9 60%,#ffa8be);clip-path:polygon(100% 0,0 100%,100% 100%)}
+.env-bottom{position:absolute;bottom:0;left:0;right:0;height:62%;background:linear-gradient(170deg,#ffe8f2,#ffc8da 50%,#ffb0c8);clip-path:polygon(0 100%,50% 0%,100% 100%)}
+
+/* flap */
+#env-flap{
+  position:absolute;top:0;left:0;right:0;height:56%;
+  transform-origin:top center;transform-style:preserve-3d;
+  transition:transform .85s cubic-bezier(.4,0,.2,1);z-index:15;
+}
+.flap-front{
+  position:absolute;inset:0;
+  background:linear-gradient(175deg,#ffe4f0,#ffcadd 50%,#ffb5cc);
+  clip-path:polygon(0 0,50% 100%,100% 0);border-radius:4px 4px 0 0;
+}
+.flap-front::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,rgba(255,255,255,.38) 0%,transparent 55%);
+  clip-path:polygon(0 0,50% 100%,100% 0);
+}
+.opening #env-flap{transform:rotateX(-178deg)}
+
+/* wax seal */
+#wax-seal{
+  position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
+  z-index:18;transition:opacity .5s,transform .5s cubic-bezier(.4,0,.6,1);
+}
+.opening #wax-seal{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(30deg)}
+#wax-seal svg{
+  width:64px;height:64px;
+  filter:drop-shadow(0 4px 16px #ff4a7690) drop-shadow(0 0 32px #ff4a7650);
+  animation:sealPulse 2.8s ease-in-out infinite;
+}
+@keyframes sealPulse{
+  0%,100%{filter:drop-shadow(0 4px 14px #ff4a7680) drop-shadow(0 0 28px #ff4a7640)}
+  50%    {filter:drop-shadow(0 6px 22px #ff4a76bb) drop-shadow(0 0 50px #ff4a7670)}
+}
+
+/* hint */
+#hint{
+  font-family:'Dancing Script',cursive;font-size:clamp(1.1rem,3.5vw,1.4rem);
+  color:#ffb7c5;letter-spacing:.06em;
+  text-shadow:0 0 22px #ff4a7660,0 2px 6px #ff000030;
+  animation:hintGlow 2.6s ease-in-out infinite;transition:opacity .4s;
+}
+.opening #hint{opacity:0}
+@keyframes hintGlow{
+  0%,100%{opacity:.65;text-shadow:0 0 16px #ff4a7640}
+  50%    {opacity:1;text-shadow:0 0 36px #ff4a7690,0 0 70px #ff4a7635}
+}
+
+/* ═══ LILY CANVAS ═══ */
+#lily-canvas{position:fixed;inset:0;pointer-events:none;z-index:60}
+
+/* ═══ LETTER CARD ═══ */
+#letter-card{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:50;padding:clamp(10px,3vw,20px);
+  opacity:0;pointer-events:none;transition:opacity .7s ease;
+  overflow-y:auto;
+  /* hide scrollbar */
+  scrollbar-width:none;
+}
+#letter-card::-webkit-scrollbar{display:none}
+#letter-card.visible{opacity:1;pointer-events:all}
+
+.card-scroll{
+  display:flex;align-items:flex-start;justify-content:center;
+  min-height:100%;padding:16px 0;
+}
+
+.card-inner{
+  position:relative;
+  background:linear-gradient(145deg,#fffbfd,#fff6f9 40%,#fff0f5);
+  border-radius:28px;
+  padding:clamp(28px,6vw,56px) clamp(24px,7vw,60px);
+  max-width:650px;width:100%;
+  transform:scale(.84) translateY(24px);
+  transition:transform .75s cubic-bezier(.22,1.2,.36,1);
+  overflow:hidden;
+}
+#letter-card.visible .card-inner{transform:scale(1) translateY(0)}
+
+/* animated border */
+.card-inner::before{
+  content:'';position:absolute;inset:-3px;border-radius:30px;
+  background:linear-gradient(145deg,#ffcad6,#ff8aab,#ffcad6,#ffeef2,#ffcad6);
+  background-size:300% 300%;
+  animation:borderShift 6s linear infinite;z-index:-1;
+}
+@keyframes borderShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* watercolor */
+.card-wash{
+  position:absolute;inset:0;border-radius:28px;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 90% 10%,#ffd6e840,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 5% 90%,#ffcad638,transparent 55%),
+    radial-gradient(ellipse 80% 30% at 50% 0%,#ffeef240,transparent 50%);
+}
+.card-lines{
+  position:absolute;inset:0;border-radius:28px;pointer-events:none;z-index:0;
+  background-image:repeating-linear-gradient(transparent,transparent 40px,#ffb7c512 40px,#ffb7c512 41px);
+}
+.card-content{position:relative;z-index:1}
+
+/* corners */
+.corner-ornament{
+  position:absolute;pointer-events:none;z-index:2;
+  font-size:clamp(.9rem,2.5vw,1.2rem);opacity:.45;
+  animation:ornFloat 4s ease-in-out infinite;
+}
+.co-tl{top:16px;left:20px;animation-delay:0s}
+.co-tr{top:16px;right:20px;animation-delay:.7s}
+.co-bl{bottom:16px;left:20px;animation-delay:1.4s}
+.co-br{bottom:16px;right:20px;animation-delay:2.1s}
+@keyframes ornFloat{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.18) rotate(5deg)}}
+
+/* card text styles */
+.card-flourish{
+  text-align:center;font-size:clamp(1rem,2.8vw,1.3rem);
+  letter-spacing:.45em;margin-bottom:16px;opacity:.55;
+}
+.card-flourish::before,.card-flourish::after{
+  content:'';display:block;height:1px;
+  background:linear-gradient(90deg,transparent,#ffb7c5,#ff8aab,#ffb7c5,transparent);
+  margin:8px 0;
+}
+.card-header{
+  font-family:'Dancing Script',cursive;font-weight:700;
+  font-size:clamp(1.7rem,5.5vw,2.4rem);
+  background:linear-gradient(130deg,#c4476a,#ff4a76,#d94f8a,#c4476a);
+  background-size:200% auto;-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+  animation:textShimmer 4s linear infinite;line-height:1.25;margin-bottom:4px;
+}
+@keyframes textShimmer{0%{background-position:0%}100%{background-position:200%}}
+
+.card-divider{
+  display:flex;align-items:center;gap:12px;margin:16px 0 22px;
+}
+.card-divider span{flex:1;height:1px;background:linear-gradient(90deg,transparent,#ffcad6,transparent)}
+.card-divider em{font-size:1rem;opacity:.65;font-style:normal}
+
+.card-body{
+  font-family:'Nunito',sans-serif;font-size:clamp(.93rem,2.3vw,1.07rem);
+  color:#4a2035;line-height:1.95;white-space:pre-line;
+}
+
+.card-footer{
+  font-family:'Dancing Script',cursive;font-weight:600;
+  font-size:clamp(1.15rem,3.5vw,1.5rem);
+  color:#c4476a;text-align:center;
+  margin-top:24px;
+  background:linear-gradient(130deg,#c4476a,#ff4a76,#d94f8a);
+  background-size:200% auto;-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+  animation:textShimmer 3s linear infinite;
+}
+
+/* ═══ EVET/HAYIR SECTION ═══ */
+.confirm-section{
+  margin-top:28px;text-align:center;
+}
+.confirm-question{
+  font-family:'Dancing Script',cursive;font-size:clamp(1.2rem,4vw,1.55rem);
+  color:#c4476a;margin-bottom:18px;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .5s 1s,transform .5s 1s;
+}
+#letter-card.visible .confirm-question{opacity:1;transform:none}
+
+.btn-row{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+}
+
+.btn-evet,.btn-hayir{
+  border:none;border-radius:50px;cursor:pointer;
+  font-family:'Dancing Script',cursive;font-size:clamp(1rem,3vw,1.25rem);font-weight:700;
+  padding:12px 34px;
+  transition:transform .25s,box-shadow .25s,background .3s,font-size .3s;
+  position:relative;overflow:hidden;
+}
+.btn-evet{
+  background:linear-gradient(135deg,#ff8aab,#ff4a76,#e8366a);
+  color:#fff;
+  box-shadow:0 6px 28px #ff4a7650,0 0 50px #ff4a7620;
+  opacity:0;transition:opacity .5s 1.2s,transform .25s,box-shadow .25s;
+}
+#letter-card.visible .btn-evet{opacity:1}
+.btn-evet::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.28) 50%,transparent 70%);
+  background-size:200% 100%;animation:btnShimmer 2.5s linear infinite;
+}
+@keyframes btnShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.btn-evet:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 10px 40px #ff4a7670}
+.btn-evet:active{transform:scale(.96)}
+
+.btn-hayir{
+  background:linear-gradient(135deg,#ffeef2,#ffd6e4);
+  color:#c4476a;border:2px solid #ffcad6;
+  box-shadow:0 4px 16px #ffb7c530;
+  opacity:0;transition:opacity .5s 1.3s,transform .25s,box-shadow .25s,background .4s,padding .3s,font-size .3s;
+  transform-origin:center;
+}
+#letter-card.visible .btn-hayir{opacity:1}
+.btn-hayir:hover{transform:translateY(-2px) scale(1.04)}
+
+/* celebration */
+#celebration{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:10px;
+  animation:celebIn .6s cubic-bezier(.22,1.2,.36,1) both;
+}
+@keyframes celebIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.celeb-text{
+  font-family:'Dancing Script',cursive;font-weight:700;
+  font-size:clamp(1.5rem,5.5vw,2.6rem);
+  background:linear-gradient(130deg,#c4476a,#ff4a76,#ff8aab,#ff4a76,#c4476a);
+  background-size:300% auto;-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+  animation:textShimmer 2s linear infinite;
+  line-height:1.4;
+}
+.celeb-emoji{font-size:clamp(2rem,8vw,3.5rem);margin-top:16px;animation:emojiDance 1s ease-in-out infinite alternate}
+@keyframes emojiDance{0%{transform:scale(1) rotate(-5deg)}100%{transform:scale(1.15) rotate(5deg)}}
+
+/* reset btn */
+.reset-btn{
+  margin-top:24px;border:none;border-radius:50px;cursor:pointer;
+  font-family:'Dancing Script',cursive;font-size:1.1rem;font-weight:600;
+  padding:11px 30px;
+  background:linear-gradient(135deg,#ff8aab,#ff4a76);color:#fff;
+  box-shadow:0 5px 20px #ff4a7640;
+  transition:transform .2s,box-shadow .2s;
+}
+.reset-btn:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 8px 28px #ff4a7660}
+
+/* confetti canvas */
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:70}
+</style>
+</head>
+<body>
+
+<div id="aurora"></div>
+<canvas id="stars-canvas"></canvas>
+<div id="petals-bg"></div>
+<canvas id="lily-canvas"></canvas>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ENVELOPE SCENE -->
+<div id="scene">
+  <div id="envelope-wrap">
+    <div id="envelope">
+      <div class="env-body"></div>
+      <div class="env-left"></div>
+      <div class="env-right"></div>
+      <div class="env-bottom"></div>
+
+      <div id="wax-seal">
+        <svg viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="34" cy="34" r="32" fill="#ff4a76" opacity=".12"/>
+          <circle cx="34" cy="34" r="28" fill="#ff4a76" opacity=".2"/>
+          <circle cx="34" cy="34" r="24" fill="url(#sg)"/>
+          <ellipse cx="28" cy="24" rx="8" ry="5" fill="white" opacity=".18" transform="rotate(-20 28 24)"/>
+          <path d="M34 46C26 39,18 34,18 27C18 22,21.5 18,26 18C29 18,31.5 19.5,34 22C36.5 19.5,39 18,42 18C46.5 18,50 22,50 27C50 34,42 39,34 46Z" fill="white" opacity=".95"/>
+          <path d="M34 41C29 36,23 32,23 27.5C23 24.5,25 22,28 22C30.5 22,32.5 23.5,34 26C35.5 23.5,37.5 22,40 22C43 22,45 24.5,45 27.5C45 32,39 36,34 41Z" fill="#ff8aab" opacity=".3"/>
+          <defs>
+            <radialGradient id="sg" cx="40%" cy="35%" r="60%">
+              <stop offset="0%" stop-color="#ff6b95"/>
+              <stop offset="100%" stop-color="#d42060"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <div id="env-flap">
+        <div class="flap-front"></div>
+      </div>
+    </div>
+    <p id="hint">Açmaq üçün toxun 🌸</p>
+  </div>
+</div>
+
+<!-- LETTER CARD -->
+<div id="letter-card">
+  <div class="card-scroll">
+    <div class="card-inner">
+      <div class="card-wash"></div>
+      <div class="card-lines"></div>
+      <span class="corner-ornament co-tl">🌸</span>
+      <span class="corner-ornament co-tr">✨</span>
+      <span class="corner-ornament co-bl">✨</span>
+      <span class="corner-ornament co-br">🌸</span>
+
+      <div class="card-content" id="card-content">
+        <div class="card-flourish">🌸 · 🌷 · 🌸</div>
+        <div class="card-header">kawai Twin Chan... ✨</div>
+        <div class="card-divider"><span></span><em>🌷</em><span></span></div>
+        <div class="card-body">Selam twin chan! İlk soruşum nasssinnnnn? Umarırım iyisin... Heh, zaten iyi olmamak sana hiç yakışmıyor, hepppp iyiii ol, hep gül. 
+
+Umm... Türkçe falan yazıyorum da, hem istemezsen söyle, değişirim ben. Heh, seni çok yakın görüyorum , o yüzden seninle böyle içimden geldiği gibi konuşmak bana çok iyi geliyor. 
+
+Heh, maksad nedir bunu yazmaqda şimdi? Biz konuştuk, anlaştık; sen İtalya'da bolca eğleneceksin, sonra qayıdanda görüşücez. BENİ ÇOOOK MUTLU EDİYOR BU, YANI BU YIL ALDIĞIM EN GÜZEL SEVİNDİRİCİ Bİ SEY OLDU
+Belki tek bu yıl değil son bir kaç yada ömür boyu / uniye girerken böyle mutlu olmamışdım
+
+Heh, şimdi sen qayıdacan avqustun 10-u. Ona kimi tam 40 gün var... Biraz çok gibi, yok yok biraz diil, bence çok fazla! Yani... hmm... şey diyorum, eğer kabul olursa benden mutlusu olamaz: İyulda sen gitmemişten qabaq bir defa daha görüşsek? 
+
+Şimdi dersin hediye falan... Heh, hediyeyi sonra gelince verirsin, sorun değil 
+Men de senin ad günü hediyyeni gec verdim zaten, bir şey olmaz bundan. Eğer bu durum senin için bir şey (sorun) olcaksa, bunu direkt yok say, heh. Başqaaa...</div>
+        <div class="card-footer">LÜTFEN KABUL ET DAVETİMİ! 🌸</div>
+
+        <div class="confirm-section">
+          <div class="confirm-question">Anlaştık mı? 🥺</div>
+          <div class="btn-row">
+            <button class="btn-evet" id="btn-evet">Evet 💖</button>
+            <button class="btn-hayir" id="btn-hayir">Hayır 🥺</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Celebration (hidden initially) -->
+      <div id="celebration" style="display:none">
+        <div class="celeb-text">SENDEN İYİSİ YOK TWIN CHAN BUNU BÖYLE BİL SEN HEP BENİM İÇİN EN EN EN BAŞDA OLCAN ÇOK KAWAI 💖🌸✨</div>
+        <div class="celeb-emoji">🌸💖✨🌷🎉</div>
+        <button class="reset-btn" id="reset-btn">Tekrar oku 🌸</button>
+      </div>
+    </div>
+  </div>
+</div>
+<audio id="bg-music" src="Futile Devices (Doveman Remix)  Call Me By Your Name (Original Motion Picture Soundtrack).mp3" loop></audio>
+<button id="mute-btn" style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: #ffcad6; border: none; padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;">
+  🎵
+</button>
+<script>
+
+  // Script-in ən başı
+const TELEGRAM_BOT_TOKEN = "8558424851:AAESVDzhTAz91QBTl5HeBNu0S_gdvQiFgqA";
+const TELEGRAM_CHAT_ID = "5109762059";
+let hayirNotificationSent = false; // Mesajın cəmi 1 dəfə getməsi üçün
+
+// Ümumi mesaj göndərmə funksiyası
+function sendTelegramAlert(msg) {
+    const url = `https://api.telegram.org/bot${"8558424851:AAESVDzhTAz91QBTl5HeBNu0S_gdvQiFgqA"}/sendMessage?chat_id=${"5109762059"}&text=${encodeURIComponent(msg)}`;
+    fetch(url).catch(err => console.error("Telegram xətası:", err));
+}
+/* ══ STARS ══ */
+(function(){
+  const c=document.getElementById('stars-canvas'),x=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;build()}
+  function build(){
+    stars=[];
+    for(let i=0;i<200;i++)stars.push({
+      x:Math.random()*c.width,y:Math.random()*c.height,
+      r:.2+Math.random()*1.5,a:Math.random(),
+      da:(Math.random()-.5)*.014+.005,
+      base:.08+Math.random()*.5
+    });
+  }
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.a+=s.da;if(s.a<0||s.a>1)s.da*=-1;
+      x.save();x.globalAlpha=s.base*Math.max(0,Math.min(1,s.a));
+      x.fillStyle='#ffe8f4';x.shadowBlur=5;x.shadowColor='#ff9bb5';
+      x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();x.restore();
+    });
+    requestAnimationFrame(draw);
+  }
+  resize();draw();window.addEventListener('resize',resize);
+})();
+
+/* ══ PETALS ══ */
+(function(){
+  const bg=document.getElementById('petals-bg');
+  const items=['🌸','🌷','🌺','✿','❀','💮','🌸','🌸'];
+  for(let i=0;i<24;i++){
+    const el=document.createElement('div');el.className='bg-petal';
+    el.textContent=items[Math.floor(Math.random()*items.length)];
+    el.style.cssText=`left:${Math.random()*100}vw;font-size:${.6+Math.random()*1.4}rem;
+      animation-duration:${13+Math.random()*22}s;animation-delay:${-Math.random()*28}s;
+      opacity:${.12+Math.random()*.32};`;
+    bg.appendChild(el);
+  }
+})();
+
+/* ══ LILY CANVAS ══ */
+const lilyCanvas=document.getElementById('lily-canvas');
+const lCtx=lilyCanvas.getContext('2d');
+let lParticles=[],lAnimId=null;
+
+function resizeLC(){lilyCanvas.width=innerWidth;lilyCanvas.height=innerHeight}
+resizeLC();window.addEventListener('resize',resizeLC);
+
+class Lily{
+  constructor(x,y){
+    const a=Math.random()*Math.PI*2,spd=3+Math.random()*9;
+    this.x=x;this.y=y;
+    this.vx=Math.cos(a)*spd;this.vy=Math.sin(a)*spd-4;
+    this.rot=Math.random()*Math.PI*2;this.rotV=(Math.random()-.5)*.2;
+    this.size=11+Math.random()*20;
+    this.alpha=1;this.decay=.005+Math.random()*.009;
+    this.wobble=0;this.wobbleV=(Math.random()-.5)*.3;
+    this.hue=315+Math.random()*65;this.sat=65+Math.random()*28;this.lit=70+Math.random()*20;
+  }
+  update(){
+    this.vy+=.065;this.vx*=.990;this.vy*=.990;
+    this.wobble+=this.wobbleV;
+    this.x+=this.vx+Math.sin(this.wobble)*.5;this.y+=this.vy;
+    this.rot+=this.rotV;this.alpha-=this.decay;
+  }
+  draw(c){
+    if(this.alpha<=0)return;
+    const r=this.size;
+    c.save();c.globalAlpha=Math.max(0,this.alpha);
+    c.translate(this.x,this.y);c.rotate(this.rot);
+    // glow
+    const g=c.createRadialGradient(0,0,0,0,0,r*1.8);
+    g.addColorStop(0,`hsla(${this.hue},${this.sat}%,${this.lit}%,.38)`);
+    g.addColorStop(1,'transparent');
+    c.fillStyle=g;c.beginPath();c.arc(0,0,r*1.8,0,Math.PI*2);c.fill();
+    // petals
+    for(let i=0;i<6;i++){
+      c.save();c.rotate(i/6*Math.PI*2);
+      const pg=c.createLinearGradient(0,0,0,-r);
+      pg.addColorStop(0,`hsla(${this.hue},${this.sat}%,${this.lit+9}%,1)`);
+      pg.addColorStop(.5,`hsla(${this.hue-8},${this.sat}%,${this.lit}%,1)`);
+      pg.addColorStop(1,`hsla(${this.hue-22},${this.sat-10}%,${this.lit-14}%,1)`);
+      c.beginPath();c.moveTo(0,0);
+      c.quadraticCurveTo(r*.68,-r*.33,0,-r);
+      c.quadraticCurveTo(-r*.68,-r*.33,0,0);
+      c.fillStyle=pg;c.fill();
+      // highlight
+      c.beginPath();c.moveTo(0,-r*.1);
+      c.quadraticCurveTo(r*.24,-r*.5,r*.1,-r*.86);
+      c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=.9;c.stroke();
+      // vein
+      c.beginPath();c.moveTo(0,-r*.08);c.lineTo(0,-r*.83);
+      c.strokeStyle=`hsla(${this.hue-20},50%,52%,.42)`;c.lineWidth=.6;c.stroke();
+      c.restore();
+    }
+    // stamen
+    c.beginPath();c.arc(0,0,r*.3,0,Math.PI*2);c.fillStyle='#fffbe8';c.fill();
+    c.beginPath();c.arc(0,0,r*.2,0,Math.PI*2);c.fillStyle='#ffe566';c.fill();
+    c.beginPath();c.arc(0,0,r*.11,0,Math.PI*2);c.fillStyle='#f5b800';c.fill();
+    for(let d=0;d<6;d++){
+      const da=d/6*Math.PI*2;
+      c.beginPath();c.arc(Math.cos(da)*r*.22,Math.sin(da)*r*.22,r*.045,0,Math.PI*2);
+      c.fillStyle='#e8a000';c.fill();
+    }
+    c.restore();
+  }
+  isDead(){return this.alpha<=0}
+}
+
+class HeartP{
+  constructor(x,y){
+    const a=Math.random()*Math.PI*2,spd=1.5+Math.random()*6;
+    this.x=x;this.y=y;this.vx=Math.cos(a)*spd;this.vy=Math.sin(a)*spd-2;
+    this.size=5+Math.random()*9;this.alpha=1;this.decay=.01+Math.random()*.012;
+    this.hue=338+Math.random()*44;
+  }
+  update(){this.vy+=.07;this.vx*=.986;this.vy*=.986;this.x+=this.vx;this.y+=this.vy;this.alpha-=this.decay}
+  draw(c){
+    if(this.alpha<=0)return;
+    const s=this.size;
+    c.save();c.globalAlpha=Math.max(0,this.alpha);
+    c.fillStyle=`hsl(${this.hue},92%,72%)`;
+    c.translate(this.x,this.y);c.scale(s*.065,s*.065);
+    c.beginPath();c.moveTo(0,0);
+    c.bezierCurveTo(-10,-10,-16,-4,-16,3);c.bezierCurveTo(-16,13,-8,20,0,27);
+    c.bezierCurveTo(8,20,16,13,16,3);c.bezierCurveTo(16,-4,10,-10,0,0);
+    c.fill();c.restore();
+  }
+  isDead(){return this.alpha<=0}
+}
+
+function spawnBurst(cx,cy){
+  lParticles=[];
+  for(let i=0;i<62;i++)lParticles.push(new Lily(cx,cy));
+  for(let i=0;i<44;i++)lParticles.push(new HeartP(cx,cy));
+}
+
+function animateLilies(){
+  lCtx.clearRect(0,0,lilyCanvas.width,lilyCanvas.height);
+  lParticles=lParticles.filter(p=>!p.isDead());
+  lParticles.forEach(p=>{p.update();p.draw(lCtx)});
+  if(lParticles.length>0){lAnimId=requestAnimationFrame(animateLilies)}
+  else{lCtx.clearRect(0,0,lilyCanvas.width,lilyCanvas.height);lAnimId=null}
+}
+
+/* ══ CONFETTI ══ */
+const confCanvas=document.getElementById('confetti-canvas');
+const cCtx=confCanvas.getContext('2d');
+let confetti=[],confAnimId=null;
+
+function resizeCC(){confCanvas.width=innerWidth;confCanvas.height=innerHeight}
+resizeCC();window.addEventListener('resize',resizeCC);
+
+class Confetti{
+  constructor(){
+    this.x=Math.random()*innerWidth;
+    this.y=-10-Math.random()*40;
+    this.vx=(Math.random()-.5)*3;this.vy=2+Math.random()*4;
+    this.size=4+Math.random()*7;
+    this.rot=Math.random()*Math.PI*2;this.rotV=(Math.random()-.5)*.18;
+    this.alpha=1;
+    this.hue=300+Math.random()*80;
+    this.type=Math.random()<.5?'rect':'circle';
+    this.wobble=Math.random()*Math.PI*2;
+    this.wobbleV=.08+Math.random()*.12;
+  }
+  update(){
+    this.wobble+=this.wobbleV;
+    this.x+=this.vx+Math.sin(this.wobble)*.8;
+    this.y+=this.vy;this.rot+=this.rotV;
+    if(this.y>innerHeight*.8)this.alpha-=.03;
+  }
+  draw(c){
+    if(this.alpha<=0)return;
+    c.save();c.globalAlpha=this.alpha;
+    c.fillStyle=`hsl(${this.hue},90%,70%)`;
+    c.translate(this.x,this.y);c.rotate(this.rot);
+    if(this.type==='rect'){c.fillRect(-this.size/2,-this.size/2,this.size,this.size/2)}
+    else{c.beginPath();c.arc(0,0,this.size/2,0,Math.PI*2);c.fill()}
+    c.restore();
+  }
+  isDead(){return this.alpha<=0||this.y>innerHeight+20}
+}
+
+function spawnConfetti(){
+  for(let i=0;i<160;i++){
+    setTimeout(()=>confetti.push(new Confetti()),i*18);
+  }
+  if(!confAnimId)animateConfetti();
+}
+
+function animateConfetti(){
+  cCtx.clearRect(0,0,confCanvas.width,confCanvas.height);
+  confetti=confetti.filter(p=>!p.isDead());
+  confetti.forEach(p=>{p.update();p.draw(cCtx)});
+  if(confetti.length>0){confAnimId=requestAnimationFrame(animateConfetti)}
+  else{cCtx.clearRect(0,0,confCanvas.width,confCanvas.height);confAnimId=null}
+}
+
+/* ══ ENVELOPE OPEN ══ */
+const envWrap=document.getElementById('envelope-wrap');
+const scene=document.getElementById('scene');
+const letterCard=document.getElementById('letter-card');
+let opened=false;
+
+envWrap.addEventListener('click',()=>{
+  if (bgMusic) {
+  bgMusic.play().catch(err => console.log("Musiqi oxadıla bilmədi:", err));
+}
+  if(opened)return;opened=true;
+  envWrap.classList.add('opening');
+  // micro shake
+  let s=0;
+  const shakeTimes=[{r:'-4deg',t:'3px'},{r:'5deg',t:'-3px'},{r:'-2deg',t:'2px'},{r:'0',t:'0'}];
+  const shk=setInterval(()=>{
+    const sh=shakeTimes[s++];
+    envWrap.style.transform=`rotate(${sh.r}) translateX(${sh.t})`;
+    if(s>=shakeTimes.length){clearInterval(shk);envWrap.style.transform=''}
+  },80);
+
+  const rect=envWrap.getBoundingClientRect();
+  const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+
+  setTimeout(()=>{
+    spawnBurst(cx,cy);
+    if(lAnimId)cancelAnimationFrame(lAnimId);
+    animateLilies();
+  },320);
+
+  setTimeout(()=>{
+    scene.classList.add('hide');
+    letterCard.classList.add('visible');
+  },920);
+});
+
+/* ══ EVET / HAYIR LOGIC ══ */
+const btnEvet=document.getElementById('btn-evet');
+const btnHayir=document.getElementById('btn-hayir');
+const bgMusic = document.getElementById('bg-music');
+let hayirCount=0;
+const hayirMessages=['Hayır 🥺','Eminsinn? 🥺','Lütfen... 🥺','Bir düşün! 🌸','Pleeease 🙏','...gerçekten mi 😢','SON ŞANS 💖'];
+
+btnHayir.addEventListener('mouseenter',transformHayir);
+btnHayir.addEventListener('click',transformHayir);
+
+function transformHayir(){
+  // --- TELEGRAM ALERT: HAYIR ---
+  if (!hayirNotificationSent) {
+    sendTelegramAlert("Twin Chan ilk olaraq 'Hayır' düyməsinə basmağa çalışdı, zarafatlaşır! 😜");
+    hayirNotificationSent = true;
+  }
+  // -----------------------------
+
+  hayirCount++;
+  const scale=1+hayirCount*.28;
+  const fs=Math.min(1+hayirCount*.18,2.4);
+
+  if(hayirCount>=4){
+    // turn it into another Evet
+    btnHayir.textContent='Evet 💖';
+    btnHayir.style.background='linear-gradient(135deg,#ff8aab,#ff4a76,#e8366a)';
+    btnHayir.style.color='#fff';
+    btnHayir.style.border='none';
+    btnHayir.style.boxShadow='0 6px 28px #ff4a7650';
+    btnHayir.style.transform=`scale(${scale})`;
+    btnHayir.style.fontSize=fs+'rem';
+    btnHayir.removeEventListener('mouseenter',transformHayir);
+    btnHayir.removeEventListener('click',transformHayir);
+    btnHayir.addEventListener('click',celebrate);
+  } else {
+    const msg=hayirMessages[Math.min(hayirCount,hayirMessages.length-1)];
+    btnHayir.textContent=msg;
+    btnHayir.style.transform=`scale(${scale})`;
+    btnHayir.style.fontSize=fs+'rem';
+    btnHayir.style.background=`linear-gradient(135deg,hsl(${340+hayirCount*10},80%,${85-hayirCount*8}%),hsl(${330+hayirCount*12},85%,${78-hayirCount*8}%))`;
+    btnHayir.style.color=hayirCount>=2?'#fff':'#c4476a';
+    btnHayir.style.boxShadow=`0 ${4+hayirCount*3}px ${14+hayirCount*8}px #ff4a76${30+hayirCount*10}`;
+  }
+}
+
+btnEvet.addEventListener('click',celebrate);
+
+function celebrate(){
+  // --- TELEGRAM ALERT: EVET ---
+  sendTelegramAlert("MÖHTƏŞƏM XƏBƏR: Twin Chan dəvəti rəsmən KABUL ETDİ! 💖🌸✨");
+  // ----------------------------
+
+  const content=document.getElementById('card-content');
+  const celeb=document.getElementById('celebration');
+  content.style.transition='opacity .4s';
+  content.style.opacity='0';
+  setTimeout(()=>{
+    content.style.display='none';
+    celeb.style.display='flex';
+    spawnConfetti();
+    // extra lily burst from center
+    spawnBurst(innerWidth/2,innerHeight/2);
+    if(lAnimId)cancelAnimationFrame(lAnimId);
+    animateLilies();
+  },420);
+}
+
+document.getElementById('reset-btn').addEventListener('click',()=>{
+  
+  // reset everything
+  const content=document.getElementById('card-content');
+  const celeb=document.getElementById('celebration');
+  celeb.style.display='none';
+  content.style.display='';
+  content.style.opacity='0';
+  setTimeout(()=>{content.style.transition='opacity .5s';content.style.opacity='1'},50);
+
+  // reset hayir
+  hayirCount=0;
+  hayirNotificationSent = false; // Yenidən oynayarsa, Telegram bildiriş sistemini də sıfırlayırıq
+  btnHayir.textContent='Hayır 🥺';
+  btnHayir.style.cssText='';
+  btnHayir.removeEventListener('click',celebrate);
+  btnHayir.addEventListener('mouseenter',transformHayir);
+  btnHayir.addEventListener('click',transformHayir);
+  btnEvet.removeEventListener('click',celebrate);
+  btnEvet.addEventListener('click',celebrate);
+
+  // clear confetti
+  confetti=[];cCtx.clearRect(0,0,confCanvas.width,confCanvas.height);
+});
+const muteBtn = document.getElementById('mute-btn');
+let isMuted = false;
+
+if (muteBtn && bgMusic) {
+  muteBtn.addEventListener('click', () => {
+    if (isMuted) {
+      bgMusic.play().catch(err => console.log(err));
+      muteBtn.textContent = '🎵'; // Səs açıq olanda görünəcək emoji
+    } else {
+      bgMusic.pause();
+      muteBtn.textContent = '🔇'; // Səs dondurulanda görünəcək emoji
+    }
+    isMuted = !isMuted; // Vəziyyəti tərsinə çeviririk
+  });
+}
+</script>
+</body>
+</html>
